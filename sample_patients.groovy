@@ -2,8 +2,8 @@
 
 def all_patient_visits = [:]
 def sampled_patients = []
-def mapped = []
-new File('./doid_icd_mappings.txt').splitEachLine('\t') { mapped << it[0].replace('.','') }
+def mapped = [:]
+new File('./doid_icd_mappings.txt').splitEachLine('\t') { mapped[it[0].replace('.','')] = it[1] }
 
 new File('./DIAGNOSES_ICD.csv').splitEachLine(',') { f ->
   def key = f[1] + '_' + f[2]
@@ -23,9 +23,8 @@ while(sampled_patients.size() < 1000) {
   def pt = all_patient_visits[key]
   if(!pt[0]) { continue; }
   def pDiag = pt[0].replaceAll('"', '')
-  println pDiag
-  if(new File('new_texts/' + key + '.txt').exists() && !already.contains(key) && mapped.contains(pDiag)) {
-    sampled_patients << key + '\t' + pt.join(',')
+  if(new File('new_texts/' + key + '.txt').exists() && !already.contains(key) && mapped.containsKey(pDiag)) {
+    sampled_patients << key + '\t' + pt[0] + '\t' + mapped[pDiag]
     already << key
   }
 }
