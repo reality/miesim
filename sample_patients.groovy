@@ -23,7 +23,7 @@ while(sampled_patients.size() < 1000) {
   def pt = all_patient_visits[key]
   if(!pt[0]) { continue; }
   def pDiag = pt[0].replaceAll('"', '')
-  if(new File('new_texts/' + key + '.txt').exists() && !already.contains(key)) {
+  if(new File('new_texts/' + key + '.txt').exists() && mapped[pDiag] && !already.contains(key)) {
     sampled_patients << key + '\t' + pt[0] + '\t' + mapped[pDiag]
     already << key
   }

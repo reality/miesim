@@ -67,10 +67,9 @@ def pcounts = [:]
 //new File('./recon1k.csv').splitEachLine('\t') {
 //new File('./reconst_train.csv').splitEachLine('\t') {
 new File('./sampled_patient_visits.csv').splitEachLine('\t') {
-it[1] = it[1]//.substring(0,3)
-  patient_visit_diagnoses[it[0]] = [it[1]]
-  if(!pcounts[it[1]]) { pcounts[it[1]] = 0 }
-  pcounts[it[1]]++
+  patient_visit_diagnoses[it[0]] = [it[2]]
+  if(!pcounts[it[2]]) { pcounts[it[2]] = 0 }
+  pcounts[it[2]]++
   println patient_visit_diagnoses[it[0]]
 }
 
@@ -185,9 +184,9 @@ println graph.toString()
 def roots = new ValidatorDAG().getTaxonomicRoots(graph)
 println roots
 
-//def icConf = new IC_Conf_Corpus(SMConstants.FLAG_IC_ANNOT_RESNIK_1995)
+def icConf = new IC_Conf_Corpus(SMConstants.FLAG_IC_ANNOT_RESNIK_1995)
 //def icConf = new IC_Conf_Topo(SMConstants.FLAG_ICI_ZHOU_2008)
-def icConf = new IC_Conf_Topo(SMConstants.FLAG_ICI_SANCHEZ_2011)
+//def icConf = new IC_Conf_Topo(SMConstants.FLAG_ICI_SANCHEZ_2011)
 def smConfPairwise = new SMconf(SMConstants.FLAG_SIM_PAIRWISE_DAG_NODE_RESNIK_1995, icConf)
 //def smConfPairwise = new SMconf(SMConstants.FLAG_SIM_PAIRWISE_DAG_NODE_LIN_1998, icConf)
 //def smConfGroupwise = new SMconf(SMConstants.FLAG_SIM_GROUPWISE_AVERAGE, icConf)
@@ -224,10 +223,9 @@ aMap.each { g1, u1 ->
   println "(${++z}/${aMap.size()})"
   //println engine.compare(smConfPairwise, factory.getURI('http://purl.obolibrary.org/obo/HP_0012531'), factory.getURI('http://purl.obolibrary.org/obo/HP_0001596'))
   def aList = []
-  aMap.each { g2, u2 ->
-    //def match = patient_visit_diagnoses[g1][0] == g2
+  dMap.each { g2, u2 ->
+    def match = patient_visit_diagnoses[g1][0] == g2
     if(g1 == g2) { return; }
-    def match = patient_visit_diagnoses[g1][0] == patient_visit_diagnoses[g2][0]
 
 
 try {
@@ -247,7 +245,7 @@ try {
   def matchRank = 0
   aList.eachWithIndex { it, i ->
     if(matchRank > 0) { return; }
-    if(patient_visit_diagnoses[it[0]][0] == patient_visit_diagnoses[it[1]][0]) {
+    if(patient_visit_diagnoses[it[0]][0] == it[1]) {
       matchRank = i+1 
     }
   }
@@ -265,7 +263,7 @@ try {
   def ps = []  // precisions
   // for each patient it[1] similar to it[0], see if it[1] contains the diagnosis from it[0] in position 0
   aList.eachWithIndex { it, i ->
-    if(patient_visit_diagnoses[it[1]][0] == patient_visit_diagnoses[it[0]][0]) {
+    if(it[1] == patient_visit_diagnoses[it[0]][0]) {
       ps << (ps.size()+1) / (i+1) //
     }
   }
